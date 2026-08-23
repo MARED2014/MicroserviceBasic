@@ -6,11 +6,11 @@ using PizzaPulse.Ordering.Infrastructure.Contexts;
 namespace PizzaPulse.Ordering.Infrastructure.Repositories;
 
 // Repositories/OrderRepository.cs
-public class OrderRepository : IOrderingRepository
+public class OrderingRepository : IOrderingRepository
 {
     private readonly OrderDbContext _context;
 
-    public OrderRepository(OrderDbContext context)
+    public OrderingRepository(OrderDbContext context)
     {
         _context = context;
     }
