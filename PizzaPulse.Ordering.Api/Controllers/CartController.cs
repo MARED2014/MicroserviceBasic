@@ -21,9 +21,7 @@ public class CartController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<CartItem>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<CartItem>>> GetCart(
-        [FromQuery] string customerId,
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IReadOnlyList<CartItem>>> GetCart([FromQuery] string customerId,CancellationToken cancellationToken = default)
     {
         var cart = await _mediator.Send(new GetCartQuery(customerId), cancellationToken);
         return Ok(cart);
@@ -32,15 +30,11 @@ public class CartController : ControllerBase
     [HttpPost("items")]
     [ProducesResponseType(typeof(IReadOnlyList<CartItem>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IReadOnlyList<CartItem>>> AddItem(
-        [FromBody] AddToCartRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyList<CartItem>>> AddItem([FromBody] AddToCartRequest request,CancellationToken cancellationToken)
     {
         try
         {
-            await _mediator.Send(
-                new AddToCartCommand(request.CustomerId, request.PizzaMenuId, request.Quantity, request.Size),
-                cancellationToken);
+            await _mediator.Send(new AddToCartCommand(request.CustomerId, request.PizzaMenuId, request.Quantity, request.Size),cancellationToken);
 
             var cart = await _mediator.Send(new GetCartQuery(request.CustomerId), cancellationToken);
             return Ok(cart);

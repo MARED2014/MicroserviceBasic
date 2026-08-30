@@ -39,9 +39,7 @@ public class MenuController : ControllerBase
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateMenuItem([FromBody] Contracts.CreatePizzaMenuRequest request, CancellationToken cancellationToken)
     {
-        var id = await _mediator.Send(
-            new CreatePizzaMenuCommand(request.Name, request.Description, request.BasePrice, request.IsAvailable),
-            cancellationToken);
+        var id = await _mediator.Send(new CreatePizzaMenuCommand(request.Name, request.Description, request.BasePrice, request.IsAvailable),cancellationToken);
 
         return CreatedAtAction(nameof(GetMenuItem), new { id }, new { id });
     }

@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/BuildingBlocks/">
-    <Project Path="PizzaPulse.Contracts/PizzaPulse.Contracts.csproj" Id="7c2a1e90-4d3b-4f6a-9c11-2b8e6f0a1d44" />
+    <Project Path="PizzaPulse.BuildingBlocks/PizzaPulse.BuildingBlocks.csproj" Id="02baa589-0bf2-45fe-89a9-8ab3253aa197" />
   </Folder>
   <Folder Name="/Services/" />
   <Folder Name="/Services/Delivery/">

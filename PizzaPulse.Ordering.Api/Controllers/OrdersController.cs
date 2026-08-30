@@ -30,9 +30,7 @@ public class OrdersController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Order>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomer(
-        [FromQuery] string customerId,
-        CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomer([FromQuery] string customerId,CancellationToken cancellationToken = default)
     {
         var orders = await _mediator.Send(new GetOrdersByCustomerQuery(customerId), cancellationToken);
         return Ok(orders);
@@ -45,9 +43,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var orderId = await _mediator.Send(
-                new PlaceOrderCommand(request.CustomerId, request.CustomerName, request.DeliveryAddress),
-                cancellationToken);
+            var orderId = await _mediator.Send(new PlaceOrderCommand(request.CustomerId, request.CustomerName, request.DeliveryAddress),cancellationToken);
 
             return CreatedAtAction(nameof(GetOrder), new { id = orderId }, new { orderId });
         }
