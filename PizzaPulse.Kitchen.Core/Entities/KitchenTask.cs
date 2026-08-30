@@ -11,6 +11,7 @@ public class KitchenTask
     public Guid Id { get; set; }
 
     public Guid OrderId { get; set; } // Order Service'ten gelen referans ID
+    public string DeliveryAddress { get; set; } = string.Empty;
     public List<string> ItemsSummary { get; set; } = new(); // Örn: ["1x Large Pepperoni", "2x Medium Margherita"]
 
     public KitchenTaskStatus Status { get; set; } = KitchenTaskStatus.Waiting; // Waiting, InOven, Ready

@@ -1,11 +1,19 @@
+using MassTransit;
+using Microsoft.OpenApi;
 using MongoDB.Driver;
+using PizzaPulse.Kitchen.Application.Queries;
 using PizzaPulse.Kitchen.Core.Repositories;
 using PizzaPulse.Kitchen.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// 1. MongoDB Client ve Database Kaydı (Singleton)
+builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var connectionString = builder.Configuration["MongoDbSettings:ConnectionString"];
@@ -19,28 +27,50 @@ builder.Services.AddScoped<IMongoDatabase>(sp =>
     return client.GetDatabase(dbName);
 });
 
-// 2. Generic Mongo Repository Kaydı (Open Generic Registration)
 builder.Services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
-
-// 3. Specific Kitchen Repository Kaydı
 builder.Services.AddScoped<IKitchenTaskRepository, KitchenTaskRepository>();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetKitchenTaskQuery).Assembly));
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(typeof(GetKitchenTaskQuery).Assembly);
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbit = builder.Configuration.GetSection("RabbitMQ");
+        cfg.Host(rabbit["Host"] ?? "localhost", ushort.Parse(rabbit["Port"] ?? "5672"), "/", h =>
+        {
+            h.Username(rabbit["Username"] ?? "guest");
+            h.Password(rabbit["Password"] ?? "guest");
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "PizzaPulse Kitchen API",
+        Version = "v1",
+        Description = "Mutfak kuyruğu. GET /api/samples JSON örneklerini verir. Fırın/hazır adımları path'teki orderId ile çalışır, body gerekmez."
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.MapOpenApi();
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Kitchen API v1");
+    options.DocumentTitle = "PizzaPulse Kitchen";
+    options.EnableTryItOutByDefault();
+    options.DisplayRequestDuration();
+});
 
 app.UseHttpsRedirection();
-
+app.UseCors();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

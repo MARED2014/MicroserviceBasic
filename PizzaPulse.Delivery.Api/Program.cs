@@ -1,4 +1,8 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
+using PizzaPulse.Delivery.Api;
+using PizzaPulse.Delivery.Application.Queries;
 using PizzaPulse.Delivery.Core.Repositories;
 using PizzaPulse.Delivery.Infrastructure.Contexts;
 using PizzaPulse.Delivery.Infrastructure.Repositories;
@@ -6,37 +10,69 @@ using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// 1. MS SQL & DbContext Kaydı
-builder.Services.AddDbContext<DeliveryDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 
-// 2. Redis Connection Multiplexer Kaydı
+builder.Services.AddDbContext<DeliveryDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
-
-// 3. Repository Kayıtları
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.AddScoped<ICourierStateRepository, CourierStateRepository>();
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetDeliveryAssignmentQuery).Assembly));
 
-// Add services to the container.
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(typeof(GetDeliveryAssignmentQuery).Assembly);
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbit = builder.Configuration.GetSection("RabbitMQ");
+        cfg.Host(rabbit["Host"] ?? "localhost", ushort.Parse(rabbit["Port"] ?? "5672"), "/", h =>
+        {
+            h.Username(rabbit["Username"] ?? "guest");
+            h.Password(rabbit["Password"] ?? "guest");
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "PizzaPulse Delivery API",
+        Version = "v1",
+        Description = "Kurye atama ve teslimat. GET /api/samples JSON örneklerini verir. Pickup/complete body istemez."
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.MapOpenApi();
+    using var scope = app.Services.CreateScope();
+    DeliveryDatabaseSeeder.Seed(scope.ServiceProvider.GetRequiredService<DeliveryDbContext>());
+}
+catch (Exception ex)
+{
+    app.Logger.LogWarning(ex, "Delivery veritabanı seed edilemedi.");
 }
 
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Delivery API v1");
+    options.DocumentTitle = "PizzaPulse Delivery";
+    options.EnableTryItOutByDefault();
+    options.DisplayRequestDuration();
+});
+
 app.UseHttpsRedirection();
-
+app.UseCors();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

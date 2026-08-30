@@ -1,6 +1,0 @@
-@PizzaPulse.WebUI_HostAddress = http://localhost:5120
-
-GET {{PizzaPulse.WebUI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -9,4 +9,5 @@ public interface IKitchenTaskRepository : IMongoRepository<KitchenTask>
 {
     Task<KitchenTask?> GetByOrderIdAsync(Guid orderId);
     Task<List<KitchenTask>> GetPendingTasksAsync();
+    Task UpdateByOrderIdAsync(KitchenTask task);
 }

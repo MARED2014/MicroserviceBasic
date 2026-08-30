@@ -1,0 +1,55 @@
+@model MenuPageViewModel
+@{
+    ViewData["Title"] = "Menü";
+}
+
+<section class="hero">
+    <h1>Fırından çıkan menü</h1>
+    <p>Birkaç pizza seçin, adet ve boyutu ayarlayın, sepete ekleyin.</p>
+</section>
+
+<form asp-action="AddSelected" method="post" class="menu-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="CustomerId" />
+
+    @if (Model.Items.Count == 0)
+    {
+        <p class="empty">Gösterilecek pizza yok. Ordering API ve SQL seed'ini kontrol edin.</p>
+    }
+    else
+    {
+        <div class="grid">
+            @for (var i = 0; i < Model.Items.Count; i++)
+            {
+                <article class="card">
+                    <label class="pick">
+                        <input type="checkbox" asp-for="Items[i].Selected" />
+                        <span>Seç</span>
+                    </label>
+                    <input type="hidden" asp-for="Items[i].PizzaMenuId" />
+                    <input type="hidden" asp-for="Items[i].Name" />
+                    <input type="hidden" asp-for="Items[i].Description" />
+                    <input type="hidden" asp-for="Items[i].BasePrice" />
+                    <h2>@Model.Items[i].Name</h2>
+                    <p>@Model.Items[i].Description</p>
+                    <strong>@Model.Items[i].BasePrice.ToString("N2") ₺</strong>
+                    <div class="row">
+                        <label>
+                            Adet
+                            <input asp-for="Items[i].Quantity" type="number" min="1" max="10" />
+                        </label>
+                        <label>
+                            Boy
+                            <select asp-for="Items[i].Size">
+                                <option>Small</option>
+                                <option>Medium</option>
+                                <option>Large</option>
+                            </select>
+                        </label>
+                    </div>
+                </article>
+            }
+        </div>
+        <button type="submit" class="cta">Seçilenleri sepete ekle</button>
+    }
+</form>

@@ -1,0 +1,102 @@
+:root {
+    --bg: #140e0a;
+    --panel: #24180f;
+    --ink: #f6ead8;
+    --muted: #c9b59a;
+    --accent: #e85d04;
+    --ok: #2d6a4f;
+    --err: #9d0208;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #3d1f0f, var(--bg) 45%);
+    color: var(--ink);
+    min-height: 100vh;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.brand {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+nav a {
+    color: var(--muted);
+    margin-left: 1rem;
+    text-decoration: none;
+}
+
+nav a:hover { color: var(--ink); }
+
+.page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+.hero h1 { margin: 0 0 0.4rem; font-size: 2rem; }
+.hero p { margin: 0 0 1.5rem; color: var(--muted); }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1rem;
+}
+
+.card {
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 1rem;
+}
+
+.card h2 { margin: 0.4rem 0; font-size: 1.15rem; }
+.card p { color: var(--muted); min-height: 3rem; }
+.pick { display: flex; gap: 0.4rem; align-items: center; color: var(--muted); }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.8rem; }
+label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--muted); }
+input, select {
+    background: #1a120c;
+    color: var(--ink);
+    border: 1px solid #3b2a1c;
+    border-radius: 8px;
+    padding: 0.4rem;
+}
+
+.cta {
+    display: inline-block;
+    margin-top: 1.5rem;
+    background: var(--accent);
+    color: white;
+    border: 0;
+    border-radius: 999px;
+    padding: 0.75rem 1.4rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cta.ghost { background: transparent; border: 1px solid var(--accent); }
+
+.banner {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.banner.ok { background: var(--ok); }
+.banner.err { background: var(--err); }
+.empty { color: var(--muted); }
+
+.cart { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 12px; overflow: hidden; }
+.cart th, .cart td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #3b2a1c; }
+.cart tfoot td { font-weight: 700; }

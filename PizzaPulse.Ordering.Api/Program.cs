@@ -1,4 +1,8 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
+using PizzaPulse.Ordering.Api;
+using PizzaPulse.Ordering.Application.Queries;
 using PizzaPulse.Ordering.Core.Repositories;
 using PizzaPulse.Ordering.Infrastructure.Contexts;
 using PizzaPulse.Ordering.Infrastructure.Repositories;
@@ -6,35 +10,70 @@ using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 
-// 1. MS SQL & DbContext Kaydı
 builder.Services.AddDbContext<OrderDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// 2. Redis Connection Multiplexer Kaydı (Singleton)
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
-    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
-
-// 3. Repository Kayıtları (Scoped)
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
 builder.Services.AddScoped<IOrderingRepository, OrderingRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetMenuQuery).Assembly));
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(typeof(GetMenuQuery).Assembly);
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbit = builder.Configuration.GetSection("RabbitMQ");
+        cfg.Host(rabbit["Host"] ?? "localhost", ushort.Parse(rabbit["Port"] ?? "5672"), "/", h =>
+        {
+            h.Username(rabbit["Username"] ?? "guest");
+            h.Password(rabbit["Password"] ?? "guest");
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "PizzaPulse Ordering API",
+        Version = "v1",
+        Description = "Menü, sepet ve sipariş. GET /api/samples JSON gövdelerini verir. Demo müşteri: cust-001. Seed pizza Id'leri samples içinde sabittir."
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.MapOpenApi();
+    using var scope = app.Services.CreateScope();
+    OrderDatabaseSeeder.Seed(scope.ServiceProvider.GetRequiredService<OrderDbContext>());
+}
+catch (Exception ex)
+{
+    app.Logger.LogWarning(ex, "Ordering veritabanı seed edilemedi.");
 }
 
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Ordering API v1");
+    options.DocumentTitle = "PizzaPulse Ordering";
+    options.EnableTryItOutByDefault();
+    options.DisplayRequestDuration();
+});
+
 app.UseHttpsRedirection();
-
+app.UseCors();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

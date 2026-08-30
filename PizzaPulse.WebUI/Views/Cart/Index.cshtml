@@ -1,0 +1,47 @@
+@model CartPageViewModel
+@{
+    ViewData["Title"] = "Sepet";
+}
+
+<section class="hero">
+    <h1>Sepet</h1>
+    <p>Müşteri: @Model.CustomerId</p>
+</section>
+
+@if (Model.Items.Count == 0)
+{
+    <p class="empty">Sepet boş. <a asp-controller="Menu" asp-action="Index">Menüden pizza seçin.</a></p>
+}
+else
+{
+    <table class="cart">
+        <thead>
+            <tr>
+                <th>Pizza</th>
+                <th>Boy</th>
+                <th>Adet</th>
+                <th>Birim</th>
+                <th>Tutar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.PizzaName</td>
+                    <td>@item.Size</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice.ToString("N2") ₺</td>
+                    <td>@item.LineTotal.ToString("N2") ₺</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">Toplam</td>
+                <td>@Model.Total.ToString("N2") ₺</td>
+            </tr>
+        </tfoot>
+    </table>
+    <a class="cta ghost" asp-controller="Menu" asp-action="Index">Menüye dön</a>
+}

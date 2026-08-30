@@ -1,23 +1,27 @@
+using PizzaPulse.WebUI.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient<OrderingApiClient>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:Ordering"] ?? "http://localhost:5107";
+    client.BaseAddress = new Uri(baseUrl);
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseExceptionHandler("/Menu/Index");
 }
 
-app.UseHttpsRedirection();
-
+app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthorization();
-
-app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Menu}/{action=Index}/{id?}");
 
 app.Run();

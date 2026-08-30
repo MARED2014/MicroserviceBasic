@@ -24,4 +24,9 @@ public class KitchenTaskRepository : MongoRepository<KitchenTask>, IKitchenTaskR
                                .SortBy(x => x.ReceivedAt)
                                .ToListAsync();
     }
+
+    public Task UpdateByOrderIdAsync(KitchenTask task)
+    {
+        return Collection.ReplaceOneAsync(x => x.OrderId == task.OrderId, task);
+    }
 }
