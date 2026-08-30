@@ -14,9 +14,12 @@ public class CartController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(string customerId = "cust-001", CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Index(string? customerId, CancellationToken cancellationToken = default)
     {
-        var model = new CartPageViewModel { CustomerId = customerId };
+        var model = new CartPageViewModel { CustomerId = customerId ?? string.Empty };
+
+        if (string.IsNullOrWhiteSpace(customerId))
+            return View(model);
 
         try
         {

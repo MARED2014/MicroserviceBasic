@@ -10,11 +10,14 @@
 
 <form asp-action="AddSelected" method="post" class="menu-form">
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="CustomerId" />
+    <label class="customer">
+        Müşteri kimliği
+        <input asp-for="CustomerId" />
+    </label>
 
     @if (Model.Items.Count == 0)
     {
-        <p class="empty">Gösterilecek pizza yok. Ordering API ve SQL seed'ini kontrol edin.</p>
+        <p class="empty">Gösterilecek pizza yok. Önce Ordering API üzerinden menü kaydı oluşturun.</p>
     }
     else
     {

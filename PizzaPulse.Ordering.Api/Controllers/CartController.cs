@@ -22,7 +22,7 @@ public class CartController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<CartItem>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CartItem>>> GetCart(
-        [FromQuery] string customerId = DemoData.CustomerId,
+        [FromQuery] string customerId,
         CancellationToken cancellationToken = default)
     {
         var cart = await _mediator.Send(new GetCartQuery(customerId), cancellationToken);

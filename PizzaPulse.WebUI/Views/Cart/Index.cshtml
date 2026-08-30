@@ -5,7 +5,13 @@
 
 <section class="hero">
     <h1>Sepet</h1>
-    <p>Müşteri: @Model.CustomerId</p>
+    <form method="get" class="customer">
+        <label>
+            Müşteri kimliği
+            <input name="customerId" value="@Model.CustomerId" />
+        </label>
+        <button type="submit" class="cta ghost">Sepeti getir</button>
+    </form>
 </section>
 
 @if (Model.Items.Count == 0)

@@ -31,7 +31,7 @@ public class OrdersController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Order>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByCustomer(
-        [FromQuery] string customerId = DemoData.CustomerId,
+        [FromQuery] string customerId,
         CancellationToken cancellationToken = default)
     {
         var orders = await _mediator.Send(new GetOrdersByCustomerQuery(customerId), cancellationToken);

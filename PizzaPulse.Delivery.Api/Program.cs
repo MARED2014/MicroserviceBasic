@@ -1,7 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
-using PizzaPulse.Delivery.Api;
 using PizzaPulse.Delivery.Application.Queries;
 using PizzaPulse.Delivery.Core.Repositories;
 using PizzaPulse.Delivery.Infrastructure.Contexts;
@@ -46,7 +45,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "PizzaPulse Delivery API",
         Version = "v1",
-        Description = "Kurye atama ve teslimat. GET /api/samples JSON örneklerini verir. Pickup/complete body istemez."
+        Description = "Kurye atama ve teslimat API."
     });
 });
 
@@ -55,11 +54,11 @@ var app = builder.Build();
 try
 {
     using var scope = app.Services.CreateScope();
-    DeliveryDatabaseSeeder.Seed(scope.ServiceProvider.GetRequiredService<DeliveryDbContext>());
+    scope.ServiceProvider.GetRequiredService<DeliveryDbContext>().Database.EnsureCreated();
 }
 catch (Exception ex)
 {
-    app.Logger.LogWarning(ex, "Delivery veritabanı seed edilemedi.");
+    app.Logger.LogWarning(ex, "Delivery veritabanı oluşturulamadı.");
 }
 
 app.UseSwagger();

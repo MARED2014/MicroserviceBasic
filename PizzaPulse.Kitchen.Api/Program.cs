@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "PizzaPulse Kitchen API",
         Version = "v1",
-        Description = "Mutfak kuyruğu. GET /api/samples JSON örneklerini verir. Fırın/hazır adımları path'teki orderId ile çalışır, body gerekmez."
+        Description = "Mutfak kuyruğu API."
     });
 });
 

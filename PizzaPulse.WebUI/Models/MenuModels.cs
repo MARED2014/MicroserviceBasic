@@ -32,20 +32,20 @@ public class MenuSelectionItem
 
 public class MenuPageViewModel
 {
-    public string CustomerId { get; set; } = "cust-001";
+    public string CustomerId { get; set; } = string.Empty;
     public List<MenuSelectionItem> Items { get; set; } = [];
 }
 
 public class CartPageViewModel
 {
-    public string CustomerId { get; set; } = "cust-001";
+    public string CustomerId { get; set; } = string.Empty;
     public List<CartItemDto> Items { get; set; } = [];
     public decimal Total => Items.Sum(i => i.LineTotal);
 }
 
 public class AddToCartRequest
 {
-    public string CustomerId { get; set; } = "cust-001";
+    public string CustomerId { get; set; } = string.Empty;
     public Guid PizzaMenuId { get; set; }
     public int Quantity { get; set; } = 1;
     public string Size { get; set; } = "Medium";

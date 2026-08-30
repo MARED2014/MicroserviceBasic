@@ -1,7 +1,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
-using PizzaPulse.Ordering.Api;
 using PizzaPulse.Ordering.Application.Queries;
 using PizzaPulse.Ordering.Core.Repositories;
 using PizzaPulse.Ordering.Infrastructure.Contexts;
@@ -47,7 +46,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "PizzaPulse Ordering API",
         Version = "v1",
-        Description = "Menü, sepet ve sipariş. GET /api/samples JSON gövdelerini verir. Demo müşteri: cust-001. Seed pizza Id'leri samples içinde sabittir."
+        Description = "Menü, sepet ve sipariş API."
     });
 });
 
@@ -56,11 +55,11 @@ var app = builder.Build();
 try
 {
     using var scope = app.Services.CreateScope();
-    OrderDatabaseSeeder.Seed(scope.ServiceProvider.GetRequiredService<OrderDbContext>());
+    scope.ServiceProvider.GetRequiredService<OrderDbContext>().Database.EnsureCreated();
 }
 catch (Exception ex)
 {
-    app.Logger.LogWarning(ex, "Ordering veritabanı seed edilemedi.");
+    app.Logger.LogWarning(ex, "Ordering veritabanı oluşturulamadı.");
 }
 
 app.UseSwagger();

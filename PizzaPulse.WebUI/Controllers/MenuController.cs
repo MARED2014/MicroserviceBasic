@@ -14,9 +14,9 @@ public class MenuController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(CancellationToken cancellationToken)
+    public async Task<IActionResult> Index(string? customerId, CancellationToken cancellationToken)
     {
-        var model = new MenuPageViewModel();
+        var model = new MenuPageViewModel { CustomerId = customerId ?? string.Empty };
 
         try
         {
@@ -43,11 +43,17 @@ public class MenuController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddSelected(MenuPageViewModel model, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(model.CustomerId))
+        {
+            TempData["Error"] = "Müşteri kimliği girin.";
+            return RedirectToAction(nameof(Index));
+        }
+
         var selected = model.Items.Where(item => item.Selected).ToList();
         if (selected.Count == 0)
         {
             TempData["Error"] = "Sepete eklemek için en az bir pizza seçin.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { customerId = model.CustomerId });
         }
 
         try
@@ -56,7 +62,7 @@ public class MenuController : Controller
             {
                 await _orderingApi.AddToCartAsync(new AddToCartRequest
                 {
-                    CustomerId = string.IsNullOrWhiteSpace(model.CustomerId) ? "cust-001" : model.CustomerId,
+                    CustomerId = model.CustomerId,
                     PizzaMenuId = item.PizzaMenuId,
                     Quantity = item.Quantity < 1 ? 1 : item.Quantity,
                     Size = string.IsNullOrWhiteSpace(item.Size) ? "Medium" : item.Size
@@ -64,7 +70,7 @@ public class MenuController : Controller
             }
 
             TempData["Success"] = $"{selected.Count} ürün sepete eklendi.";
-            return RedirectToAction("Index", "Cart");
+            return RedirectToAction("Index", "Cart", new { customerId = model.CustomerId });
         }
         catch (Exception)
         {
