@@ -12,8 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+    options.AddDefaultPolicy(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
 builder.Services.AddDbContext<DeliveryDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -31,8 +30,8 @@ builder.Services.AddMassTransit(x =>
         var rabbit = builder.Configuration.GetSection("RabbitMQ");
         cfg.Host(rabbit["Host"] ?? "localhost", ushort.Parse(rabbit["Port"] ?? "5672"), "/", h =>
         {
-            h.Username(rabbit["Username"] ?? "guest");
-            h.Password(rabbit["Password"] ?? "guest");
+            h.Username(rabbit["Username"] ?? "admin");
+            h.Password(rabbit["Password"] ?? "Password123!");
         });
         cfg.ConfigureEndpoints(context);
     });

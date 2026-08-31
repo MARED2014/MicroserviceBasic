@@ -40,9 +40,7 @@ public class KitchenTasksController : ControllerBase
     [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateKitchenTaskRequest request, CancellationToken cancellationToken)
     {
-        var id = await _mediator.Send(
-            new CreateKitchenTaskCommand(request.OrderId, request.ItemsSummary, request.DeliveryAddress),
-            cancellationToken);
+        var id = await _mediator.Send(new CreateKitchenTaskCommand(request.OrderId, request.ItemsSummary, request.DeliveryAddress),cancellationToken);
 
         return CreatedAtAction(nameof(GetByOrder), new { orderId = request.OrderId }, new { id, request.OrderId });
     }
