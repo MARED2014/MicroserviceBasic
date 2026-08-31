@@ -1,6 +1,6 @@
 using MassTransit;
 using MediatR;
-using PizzaPulse.Contracts.Events;
+using PizzaPulse.BuildingBlocks.Contracts.EventBus.Messages;
 using PizzaPulse.Delivery.Application.Commands;
 using PizzaPulse.Delivery.Core.Entities;
 using PizzaPulse.Delivery.Core.Repositories;

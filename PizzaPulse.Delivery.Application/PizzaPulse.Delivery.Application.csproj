@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PizzaPulse.BuildingBlocks\PizzaPulse.BuildingBlocks.csproj" />
     <ProjectReference Include="..\PizzaPulse.Delivery.Core\PizzaPulse.Delivery.Core.csproj" />
   </ItemGroup>
 

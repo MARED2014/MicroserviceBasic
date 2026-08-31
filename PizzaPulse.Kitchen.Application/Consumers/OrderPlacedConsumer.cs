@@ -1,6 +1,6 @@
 using MassTransit;
 using MediatR;
-using PizzaPulse.Contracts.Events;
+using PizzaPulse.BuildingBlocks.Contracts.EventBus.Messages;
 using PizzaPulse.Kitchen.Application.Commands;
 
 namespace PizzaPulse.Kitchen.Application.Consumers;
