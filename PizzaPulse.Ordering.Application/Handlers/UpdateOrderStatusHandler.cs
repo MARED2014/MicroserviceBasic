@@ -15,8 +15,7 @@ public class UpdateOrderStatusHandler : IRequestHandler<UpdateOrderStatusCommand
 
     public async Task Handle(UpdateOrderStatusCommand request, CancellationToken cancellationToken)
     {
-        var order = await _orderingRepository.GetByIdAsync(request.OrderId)
-            ?? throw new InvalidOperationException("Sipariş bulunamadı.");
+        var order = await _orderingRepository.GetByIdAsync(request.OrderId) ?? throw new InvalidOperationException("Sipariş bulunamadı.");
 
         order.Status = request.Status;
         _orderingRepository.Update(order);

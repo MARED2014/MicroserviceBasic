@@ -13,10 +13,7 @@ public class PlaceOrderHandler : IRequestHandler<PlaceOrderCommand, Guid>
     private readonly IOrderingRepository _orderingRepository;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public PlaceOrderHandler(
-        ICartRepository cartRepository,
-        IOrderingRepository orderingRepository,
-        IPublishEndpoint publishEndpoint)
+    public PlaceOrderHandler(ICartRepository cartRepository, IOrderingRepository orderingRepository, IPublishEndpoint publishEndpoint)
     {
         _cartRepository = cartRepository;
         _orderingRepository = orderingRepository;
@@ -25,9 +22,7 @@ public class PlaceOrderHandler : IRequestHandler<PlaceOrderCommand, Guid>
 
     public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.CustomerId)
-            || string.IsNullOrWhiteSpace(request.CustomerName)
-            || string.IsNullOrWhiteSpace(request.DeliveryAddress))
+        if (string.IsNullOrWhiteSpace(request.CustomerId) || string.IsNullOrWhiteSpace(request.CustomerName) || string.IsNullOrWhiteSpace(request.DeliveryAddress))
         {
             throw new InvalidOperationException("Müşteri ve teslimat adresi zorunludur.");
         }

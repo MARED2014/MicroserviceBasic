@@ -1,6 +1,7 @@
 using MassTransit;
 using Microsoft.OpenApi;
 using MongoDB.Driver;
+using PizzaPulse.Kitchen.Application.Consumers;
 using PizzaPulse.Kitchen.Application.Queries;
 using PizzaPulse.Kitchen.Core.Repositories;
 using PizzaPulse.Kitchen.Infrastructure.Repositories;
@@ -33,7 +34,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetKi
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumers(typeof(GetKitchenTaskQuery).Assembly);
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("kitchen", false));
+    x.AddConsumers(typeof(OrderPlacedConsumer).Assembly);
     x.UsingRabbitMq((context, cfg) =>
     {
         var rabbit = builder.Configuration.GetSection("RabbitMQ");

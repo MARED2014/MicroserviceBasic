@@ -16,12 +16,7 @@ public class OrderPlacedConsumer : IConsumer<OrderPlaced>
 
     public Task Consume(ConsumeContext<OrderPlaced> context)
     {
-        var items = context.Message.Items
-            .Select(item => $"{item.Quantity}x {item.Size} {item.PizzaName}")
-            .ToList();
-
-        return _mediator.Send(
-            new CreateKitchenTaskCommand(context.Message.OrderId, items, context.Message.DeliveryAddress),
-            context.CancellationToken);
+        var items = context.Message.Items.Select(item => $"{item.Quantity}x {item.Size} {item.PizzaName}").ToList();
+        return _mediator.Send(new CreateKitchenTaskCommand(context.Message.OrderId, items, context.Message.DeliveryAddress), context.CancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+using PizzaPulse.Ordering.Application.Consumers;
 using PizzaPulse.Ordering.Application.Queries;
 using PizzaPulse.Ordering.Core.Repositories;
 using PizzaPulse.Ordering.Infrastructure.Contexts;
@@ -25,7 +26,8 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetMe
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumers(typeof(GetMenuQuery).Assembly);
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ordering", false));
+    x.AddConsumers(typeof(OrderBakedConsumer).Assembly);
     x.UsingRabbitMq((context, cfg) =>
     {
         var rabbit = builder.Configuration.GetSection("RabbitMQ");
