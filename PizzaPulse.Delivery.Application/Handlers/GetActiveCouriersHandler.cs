@@ -7,15 +7,15 @@ namespace PizzaPulse.Delivery.Application.Handlers;
 
 public class GetActiveCouriersHandler : IRequestHandler<GetActiveCouriersQuery, IEnumerable<Courier>>
 {
-    private readonly IDeliveryRepository _deliveryRepository;
+    private readonly ICourierRepository _courierRepository;
 
-    public GetActiveCouriersHandler(IDeliveryRepository deliveryRepository)
+    public GetActiveCouriersHandler(ICourierRepository courierRepository)
     {
-        _deliveryRepository = deliveryRepository;
+        _courierRepository = courierRepository;
     }
 
     public Task<IEnumerable<Courier>> Handle(GetActiveCouriersQuery request, CancellationToken cancellationToken)
     {
-        return _deliveryRepository.GetActiveCouriersAsync();
+        return _courierRepository.GetActiveAsync(cancellationToken);
     }
 }

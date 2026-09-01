@@ -19,6 +19,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<DeliveryDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+builder.Services.AddScoped<ICourierRepository, CourierRepository>();
 builder.Services.AddScoped<ICourierStateRepository, CourierStateRepository>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetDeliveryAssignmentQuery).Assembly));

@@ -8,11 +8,16 @@ namespace PizzaPulse.Delivery.Application.Handlers;
 public class AssignCourierHandler : IRequestHandler<AssignCourierCommand, Guid>
 {
     private readonly IDeliveryRepository _deliveryRepository;
+    private readonly ICourierRepository _courierRepository;
     private readonly ICourierStateRepository _courierStateRepository;
 
-    public AssignCourierHandler(IDeliveryRepository deliveryRepository, ICourierStateRepository courierStateRepository)
+    public AssignCourierHandler(
+        IDeliveryRepository deliveryRepository,
+        ICourierRepository courierRepository,
+        ICourierStateRepository courierStateRepository)
     {
         _deliveryRepository = deliveryRepository;
+        _courierRepository = courierRepository;
         _courierStateRepository = courierStateRepository;
     }
 
@@ -54,7 +59,7 @@ public class AssignCourierHandler : IRequestHandler<AssignCourierCommand, Guid>
 
     private async Task<Courier?> FindAvailableCourierAsync()
     {
-        var couriers = await _deliveryRepository.GetActiveCouriersAsync();
+        var couriers = await _courierRepository.GetActiveAsync();
 
         foreach (var courier in couriers)
         {

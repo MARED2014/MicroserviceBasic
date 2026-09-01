@@ -23,13 +23,6 @@ public class DeliveryRepository : IDeliveryRepository
         return await _context.DeliveryAssignments.FirstOrDefaultAsync(d => d.OrderId == orderId);
     }
 
-    public async Task<IEnumerable<Courier>> GetActiveCouriersAsync()
-    {
-        return await _context.Couriers
-            .Where(c => c.IsActive)
-            .ToListAsync();
-    }
-
     public async Task AddAssignmentAsync(DeliveryAssignment assignment)
     {
         await _context.DeliveryAssignments.AddAsync(assignment);

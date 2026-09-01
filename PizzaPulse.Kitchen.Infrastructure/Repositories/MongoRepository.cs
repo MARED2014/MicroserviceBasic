@@ -1,8 +1,5 @@
 ﻿using MongoDB.Driver;
 using PizzaPulse.Kitchen.Core.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PizzaPulse.Kitchen.Infrastructure.Repositories;
 
@@ -10,14 +7,19 @@ public class MongoRepository<T> : IMongoRepository<T> where T : class
 {
     protected readonly IMongoCollection<T> Collection;
 
-    public MongoRepository(IMongoDatabase database, string collectionName)
+    public MongoRepository(IMongoDatabase database)
+        : this(database, typeof(T).Name.ToLowerInvariant() + "s")
+    {
+    }
+
+    protected MongoRepository(IMongoDatabase database, string collectionName)
     {
         Collection = database.GetCollection<T>(collectionName);
     }
 
     public async Task<T?> GetByIdAsync(Guid id)
     {
-        var filter = Builders<T>.Filter.Eq("_id", id.ToString());
+        var filter = Builders<T>.Filter.Eq("Id", id);
         return await Collection.Find(filter).FirstOrDefaultAsync();
     }
 
@@ -33,7 +35,7 @@ public class MongoRepository<T> : IMongoRepository<T> where T : class
 
     public async Task UpdateAsync(Guid id, T entity)
     {
-        var filter = Builders<T>.Filter.Eq("_id", id.ToString());
+        var filter = Builders<T>.Filter.Eq("Id", id);
         await Collection.ReplaceOneAsync(filter, entity);
     }
 }

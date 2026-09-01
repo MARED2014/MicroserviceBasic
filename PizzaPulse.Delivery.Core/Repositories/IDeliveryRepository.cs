@@ -8,7 +8,6 @@ namespace PizzaPulse.Delivery.Core.Repositories;
 public interface IDeliveryRepository
 {
     Task<DeliveryAssignment?> GetByOrderIdAsync(Guid orderId);
-    Task<IEnumerable<Courier>> GetActiveCouriersAsync();
     Task AddAssignmentAsync(DeliveryAssignment assignment);
     Task SaveChangesAsync();
 }
