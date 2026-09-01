@@ -1,0 +1,52 @@
+@model OrderDto
+@{
+    ViewData["Title"] = "Sipariş";
+}
+
+@if (Model is null)
+{
+    <p class="empty">Sipariş bulunamadı.</p>
+}
+else
+{
+    <section class="hero">
+        <h1>Sipariş alındı</h1>
+        <p>No: @Model.Id</p>
+    </section>
+
+    <p class="status">Durum: <strong>@Model.StatusText</strong></p>
+    <p class="empty">@Model.CustomerName · @Model.DeliveryAddress</p>
+
+    <table class="cart">
+        <thead>
+            <tr>
+                <th>Pizza</th>
+                <th>Boy</th>
+                <th>Adet</th>
+                <th>Birim</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.PizzaName</td>
+                    <td>@item.Size</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice.ToString("N2") ₺</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Toplam</td>
+                <td>@Model.TotalAmount.ToString("N2") ₺</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <p class="empty">Mutfak (fırın / hazır) ve kurye (alma / teslim) adımları operatör işidir: Kitchen Swagger http://localhost:5041/swagger ve Delivery Swagger http://localhost:5045/swagger. Bu sayfayı yenileyerek durumu takip edin.</p>
+
+    <a class="cta" asp-action="Details" asp-route-id="@Model.Id">Durumu yenile</a>
+    <a class="cta ghost" asp-controller="Menu" asp-action="Index" asp-route-customerId="@Model.CustomerId">Yeni sipariş</a>
+}

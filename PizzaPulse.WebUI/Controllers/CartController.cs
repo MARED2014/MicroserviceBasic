@@ -32,4 +32,33 @@ public class CartController : Controller
 
         return View(model);
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PlaceOrder(CartPageViewModel model, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(model.CustomerId) || string.IsNullOrWhiteSpace(model.CustomerName) || string.IsNullOrWhiteSpace(model.DeliveryAddress))
+        {
+            TempData["Error"] = "Müşteri kimliği, ad ve teslimat adresi zorunludur.";
+            return RedirectToAction(nameof(Index), new { customerId = model.CustomerId });
+        }
+
+        try
+        {
+            var orderId = await _orderingApi.PlaceOrderAsync(new PlaceOrderRequest
+            {
+                CustomerId = model.CustomerId,
+                CustomerName = model.CustomerName,
+                DeliveryAddress = model.DeliveryAddress
+            }, cancellationToken);
+
+            TempData["Success"] = "Sipariş alındı. Mutfak kuyruğuna düştü.";
+            return RedirectToAction("Details", "Orders", new { id = orderId });
+        }
+        catch (Exception)
+        {
+            TempData["Error"] = "Sipariş verilemedi. Sepetin dolu olduğundan ve Ordering API ile RabbitMQ'nun çalıştığından emin olun.";
+            return RedirectToAction(nameof(Index), new { customerId = model.CustomerId });
+        }
+    }
 }

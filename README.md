@@ -159,7 +159,7 @@ Liste: `GET /api/couriers` veya `GET /api/couriers/active`. Güncelleme `PUT /ap
 
 Sipariş durumu Ordering’de event’lerle güncellenir: `Received → Preparing → Baked → OnTheWay → Delivered`.
 
-WebUI yalnızca Ordering’e bağlanır: menüyü listeler, müşteri kimliği ile seçilen pizzaları sepete ekler. Mutfak ve teslimat adımları Swagger üzerinden yürür.
+WebUI menü, sepet **ve sipariş vermeyi** kapsar. Sipariş sonrası durum sayfasından takip edilir. Fırın / hazır / kurye alma-teslim operatör adımları Swagger’dadır.
 
 ## Bilinen sınırlar
 

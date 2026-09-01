@@ -35,4 +35,25 @@ public class OrderingApiClient
         var detail = await response.Content.ReadAsStringAsync(cancellationToken);
         throw new InvalidOperationException(string.IsNullOrWhiteSpace(detail) ? "Sepete eklenemedi." : detail);
     }
+
+    public async Task<Guid> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken cancellationToken = default)
+    {
+        using var response = await _httpClient.PostAsJsonAsync("/api/orders", request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            var detail = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new InvalidOperationException(string.IsNullOrWhiteSpace(detail) ? "Sipariş oluşturulamadı." : detail);
+        }
+
+        var payload = await response.Content.ReadFromJsonAsync<PlaceOrderResponse>(cancellationToken);
+        if (payload is null || payload.OrderId == Guid.Empty)
+            throw new InvalidOperationException("Sipariş numarası alınamadı.");
+
+        return payload.OrderId;
+    }
+
+    public async Task<OrderDto?> GetOrderAsync(Guid orderId, CancellationToken cancellationToken = default)
+    {
+        return await _httpClient.GetFromJsonAsync<OrderDto>($"/api/orders/{orderId}", cancellationToken);
+    }
 }

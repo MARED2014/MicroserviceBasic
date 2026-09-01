@@ -49,5 +49,19 @@ else
             </tr>
         </tfoot>
     </table>
-    <a class="cta ghost" asp-controller="Menu" asp-action="Index">Menüye dön</a>
+    <form asp-action="PlaceOrder" method="post" class="checkout">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="CustomerId" />
+        <h2>Siparişi tamamla</h2>
+        <label>
+            Ad soyad
+            <input asp-for="CustomerName" />
+        </label>
+        <label>
+            Teslimat adresi
+            <input asp-for="DeliveryAddress" />
+        </label>
+        <button type="submit" class="cta">Sipariş ver</button>
+    </form>
+    <a class="cta ghost" asp-controller="Menu" asp-action="Index" asp-route-customerId="@Model.CustomerId">Menüye dön</a>
 }
